@@ -18,6 +18,7 @@ import org.apache.storm.kafka.StringScheme;
 import org.apache.storm.kafka.ZkHosts;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.utils.Utils;
 
 import com.panand.docker.serf.elasticsearch.IndexBolt;
 
@@ -51,10 +52,17 @@ public class ContainerEvent {
 		builder.setSpout("DockerSpout", kafkaSpout, spoutCount);
 		builder.setBolt("IndexBolt", indexBolt, indexBoltCount).shuffleGrouping("DockerSpout");
 		
-		//LocalCluster cluster = new LocalCluster();
-		//cluster.submitTopology("docker-container-events", conf, builder.createTopology());
-		
-		StormSubmitter.submitTopology("docker-container-events", conf, builder.createTopology());
+		if (args != null && args.length > 0) {
+	    	conf.setNumWorkers(3);
+		    StormSubmitter.submitTopologyWithProgressBar(args[0], conf, builder.createTopology());
+	    }
+	    else {
+	    	LocalCluster cluster = new LocalCluster();
+	    	cluster.submitTopology("test", conf, builder.createTopology());
+	    	Utils.sleep(10000);
+	    	cluster.killTopology("test");
+		    cluster.shutdown();
+	    }
 
 	}
 }
