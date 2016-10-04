@@ -30,50 +30,49 @@
       <scope>test</scope>
     </dependency>
     
-    <!-- Storm deps -->
-    <dependency>
-	    <groupId>org.apache.storm</groupId>
-	    <artifactId>storm-core</artifactId>
-	    <version>1.0.2</version>
-	    <scope>provided</scope>
-	</dependency>
+    <!-- storm -->
 	<dependency>
-	    <groupId>org.apache.storm</groupId>
-	    <artifactId>storm-kafka</artifactId>
-	    <version>1.0.2</version>
-	</dependency>
-	<dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.11</artifactId>
-      <version>0.10.0.1</version>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-core</artifactId>
+        <version>0.9.5</version>
+        <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-kafka</artifactId>
+        <version>0.9.5</version>
+    </dependency>
+    
+    <!-- kafka -->
+    <dependency>
 	    <groupId>org.apache.kafka</groupId>
-	    <artifactId>kafka-clients</artifactId>
-	    <version>0.10.0.1</version>
+	    <artifactId>kafka_2.11</artifactId>
+	    <version>0.8.2.1</version>
+	     <exclusions>
+             <exclusion>
+                 <groupId>org.apache.zookeeper</groupId>
+                 <artifactId>zookeeper</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>log4j</groupId>
+                 <artifactId>log4j</artifactId>
+             </exclusion>
+         </exclusions>
 	</dependency>
 	
-	<!-- Kafka -->
-	<dependency>
-	    <groupId>org.apache.kafka</groupId>
-	    <artifactId>kafka_2.10</artifactId>
-	    <version>0.10.0.0</version>
-	    <exclusions>
-            <exclusion>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-            </exclusion>
-        </exclusions>
-	</dependency>
 	
 		
   </dependencies>
   
   <build>
+  	<resources>
+        <resource>
+            <directory>${basedir}/src/main/resources</directory>
+            <includes>
+                <include>*.properties</include>
+            </includes>
+        </resource>
+    </resources>
   	<plugins>
 	  	<plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
@@ -88,7 +87,7 @@
 	            <configuration>
 	              <transformers>
 	                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-	                  <mainClass>com.panand.docker.serf.ContainerEvent</mainClass>
+	                  <mainClass>com.panand.docker.serf.ContainerTopology</mainClass>
 	                </transformer>
 	              </transformers>
 	            </configuration>

@@ -16,8 +16,7 @@ public class SerfProperties {
    public static Properties getSerfProperties() throws IOException {
 	   
 	   Properties properties = new Properties();
-	   FileReader rd = new FileReader("/tmp/serf.properties");
-       //FileReader rd = new FileReader("E:\\GitRepos\\Docker-Serf\\serf.properties");
+	   FileReader rd = new FileReader("serf.properties");
        properties.load(rd);
        
        return properties;
