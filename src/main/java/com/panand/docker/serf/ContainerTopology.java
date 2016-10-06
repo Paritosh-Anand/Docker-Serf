@@ -51,7 +51,7 @@ public class ContainerTopology {
 			
 			KafkaSpout kafkaSpout = new KafkaSpout(kafkaSpoutConfig);
 			
-			IndexEvents indexEvents = new IndexEvents();
+			IndexEvents indexEvents = new IndexEvents(properties);
 			
 			TopologyBuilder builder = new TopologyBuilder();
 			builder.setSpout("ContainerSpout", kafkaSpout);
