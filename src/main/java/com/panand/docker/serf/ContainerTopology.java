@@ -37,24 +37,28 @@ public class ContainerTopology {
 		
 		try {
 			String zkHosts = properties.getProperty("com.panand.docker.serf.container.zkHosts");
-			int kafkaSpoutCount = Integer.parseInt((properties.getProperty("com.panand.docker.serf.container.spoutCount")));
+			int kafkaSpoutCount = Integer.parseInt((properties.getProperty("com.panand.docker.serf.container.spoutCount", "2")));
 			String containerTopic = properties.getProperty("com.panand.docker.serf.container.containerTopic");
-			int bufferSize = Integer.parseInt((properties.getProperty("com.panand.docker.serf.container.message.buffer.size", "10")));
-			
 			String nimbusHost = properties.getProperty("com.panand.docker.serf.container.nimbus.host");
+			boolean forceFromStart = Boolean.getBoolean(properties.getProperty("com.panand.docker.serf.container.forceFromStart", "false"));
 			
 			BrokerHosts brokerHosts = new ZkHosts(zkHosts);
 			SpoutConfig kafkaSpoutConfig = new SpoutConfig(brokerHosts, containerTopic, "", ContainerTopology.class.getName());
 			
 			kafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-			kafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true;
+
+			if(forceFromStart) {
+				kafkaSpoutConfig.forceFromStart = true; // start reading from the beginning.
+			} else {
+				kafkaSpoutConfig.useStartOffsetTimeIfOffsetOutOfRange = true; // start reading from current.
+			}
 			
 			KafkaSpout kafkaSpout = new KafkaSpout(kafkaSpoutConfig);
 			
 			IndexEvents indexEvents = new IndexEvents(properties);
 			
 			TopologyBuilder builder = new TopologyBuilder();
-			builder.setSpout("ContainerSpout", kafkaSpout);
+			builder.setSpout("ContainerSpout", kafkaSpout, kafkaSpoutCount);
 			builder.setBolt("IndexEventBolt", indexEvents).shuffleGrouping("ContainerSpout");
 			
 			Config config = new Config();
